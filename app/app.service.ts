@@ -7,7 +7,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { CustomLoggerService } from './logger/logger.service';
 import { Telegraf } from 'telegraf';
 import { ClientKafka } from '@nestjs/microservices';
-import { EventMap } from './models/event_map.model';
+import { EventMap, EventMapDocument } from './models/event_map.model';
 import { MessageDTO, SendMailDTO } from './dto/send-mail.dto';
 import { User } from './models/user.schema';
 @Injectable()
@@ -25,6 +25,12 @@ export class AppService {
         this.bot = new Telegraf(process.env.TG_BOT_TOKEN)
     }
 
+    /**
+     * Render body of message by template and context
+     * @param template - Template of message
+     * @param context - Context of message
+     * @returns Object with keys 'ru' and 'en' and values - rendered text of message
+     */
     async renderBody(template: Template, context: any): Promise<Object> {
         const ruBody = Handlebars.compile(template.ru.body);
         const enBody = Handlebars.compile(template.en.body);
@@ -34,6 +40,12 @@ export class AppService {
         }
     }
 
+    /**
+     * Create a new template with specified russian and english messages
+     * @param ru - Russian message
+     * @param en - English message
+     * @returns Created template document
+     */
     async createTemplate(ru: StructureMessage, en: StructureMessage,): Promise<TemplateDocument> {
         const template: Template = {
             ru: {
@@ -52,8 +64,13 @@ export class AppService {
         this.logger.log(`Template created: ${res._id}`);
         return res
     }
+    /**
+     * Send email to given address with given message
+     * @param to - email address
+     * @param message - object with subject and text of message
+     */
 
-    async sendMail(to: string, message: { subject: string, text: string }) {
+    async sendMail(to: string, message: MessageDTO) {
 
         const sendMessage = {
             to: to,
@@ -73,10 +90,20 @@ export class AppService {
         }
     }
 
+    /**
+     * Send message to kafka topic
+     * @param topic - topic to send message to
+     * @param message - message to send
+     */
     async sendToKafka(topic: string, message: any) {
         this.kafkaClient.emit(topic, message);
     }
 
+    /**
+     * Send message to telegram
+     * @param chatId - telegram chat id
+     * @param message - message to send
+     */
     async sendTelegram(chatId: string, message: string) {
         try {
             await this.bot.telegram.sendMessage(chatId, message);
@@ -90,10 +117,16 @@ export class AppService {
         }
     }
 
+    /**
+     * Find event map by topic, render body of message by template and user context, and return SendMailDTO
+     * @param topic - topic to find event map
+     * @param userId - user id to find user
+     * @returns SendMailDTO with rendered message
+     */
     async informByTemplate(topic: string, userId: string): Promise<SendMailDTO> {
-        const eventmap = await this.eventMapModel.findOne({
+        const eventmap: EventMapDocument = await this.eventMapModel.findOne({
             topic: topic
-        })
+        }).exec();
 
         if (eventmap) {
             await eventmap.populate('template_id')

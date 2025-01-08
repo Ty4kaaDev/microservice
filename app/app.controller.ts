@@ -5,16 +5,21 @@ import { ValidateData } from './validate/validate.decorator';
 import { SendMailDTO } from './dto/send-mail.dto';
 import { SendTelegramDTO } from './dto/send-tg.dto';
 import { UserIdDTO } from './dto/user-id.dto';
-import { privateDecrypt } from 'crypto';
 
 @Controller()
 export class AppController {
     constructor(
         private readonly appService: AppService,
         @Inject(`${process.env.KAFKA_CLIENT_NAME}`) private readonly kafkaClient: ClientKafka
-    ) { }
+    ) {
+    }
 
     @MessagePattern('queuing.email.send')
+    /**
+     * Sends an email to the specified user.
+     * @param data contains email data (to, message)
+     * @returns {Promise<void>}
+     */
     async sendEmail(
         @ValidateData({ data: SendMailDTO, topicForError: 'queuing.email.send.failed' }) data: SendMailDTO
     ) {
@@ -22,6 +27,11 @@ export class AppController {
     }
 
     @MessagePattern('queuing.tg.send')
+    /**
+     * Sends a telegram message to the specified chat id.
+     * @param data contains telegram data (chatId, message)
+     * @returns {Promise<void>}
+     */
     async sendTelegram(
         @ValidateData({ data: SendTelegramDTO, topicForError: 'queuing.tg.send.failed' }) data: SendTelegramDTO
     ) {

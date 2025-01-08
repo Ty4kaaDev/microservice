@@ -38,18 +38,18 @@ services:
       - "8025:8025"  # Веб-интерфейс для просмотра писем
     networks:
       - kafka-net
-  nestjs:
-    build: ./  # Укажи путь к проекту NestJS
-    container_name: nestjs
-    ports:
-      - "3000:3000"  # Указываем порт, на котором будет работать приложение
-    depends_on:
-      - kafka  # NestJS зависит от Kafka
-      - mailhog  # NestJS зависит от Mailhog
-    environment:
-      - KAFKA_BROKER=kafka:9093  # Указываем брокер Kafka
-    networks:
-      - kafka-net
+  # nestjs:
+  #   build: ./  # Укажи путь к проекту NestJS
+  #   container_name: nestjs
+  #   ports:
+  #     - "3000:3000"  # Указываем порт, на котором будет работать приложение
+  #   depends_on:
+  #     - kafka  # NestJS зависит от Kafka
+  #     - mailhog  # NestJS зависит от Mailhog
+  #   environment:
+  #     - KAFKA_BROKER=kafka:9093  # Указываем брокер Kafka
+  #   networks:
+  #     - kafka-net
 networks:
   kafka-net:
     driver: bridge

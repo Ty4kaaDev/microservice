@@ -16,9 +16,9 @@ async function bootstrap() {
         },
     );
     const logger = new Logger('Microservice');
-    try {
-        logger.log('Microservice is starting...');
-        logger.debug(`
+    logger.log('Microservice is starting...');
+    logger.debug(
+            `
             KAFKA_URI: ${process.env.KAFKA_URI}
             MONGO_URI: ${process.env.MONGO_URI}
             MONGO_NAME: ${process.env.MONGO_NAME}
@@ -29,7 +29,10 @@ async function bootstrap() {
             MAILER_PORT ${process.env.MAILER_PORT}
             MAILER_SMTP ${process.env.MAILER_SMTP}
             MAILER_FROM_NAME ${process.env.MAILER_FROM_NAME}
-            DOMAIN ${process.env.DOMAIN}`);
+            DOMAIN ${process.env.DOMAIN}
+            `
+    );
+    try {
         await app.listen();
         logger.log('Microservice is listening...');
     } catch (error) {

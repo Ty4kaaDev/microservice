@@ -8,7 +8,6 @@ export const ValidateData = createParamDecorator(
     async (data: { data: any, topicForError?: string }, ctx: ExecutionContext): Promise<any> => {
 
         const message = ctx.switchToRpc().getData();
-
         const instance = plainToInstance(data.data, message)
 
         try {

@@ -1,26 +1,28 @@
 import { MailerModule } from '@nestjs-modules/mailer';
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MongooseModule } from '@nestjs/mongoose';
-import { CustomLoggerService } from 'app/logger/logger.service';
-import { EventMap, EventMapSchema } from 'app/models/event_map.model';
-import { Template, TemplateSchema } from 'app/models/template.model';
-import { User, UserSchema } from 'app/models/user.schema';
-
+import { CustomLoggerService } from '../logger/logger.service';
+import { EventMap, EventMapSchema } from '../models/event_map.model';
+import { Template, TemplateSchema } from '../models/template.model';
+import { User, UserSchema } from '../models/user.schema';
+@Global()
 @Module({
     imports: [
+        // mongoose 
         MongooseModule.forFeature([
             { name: EventMap.name, schema: EventMapSchema },
             { name: Template.name, schema: TemplateSchema },
             { name: User.name, schema: UserSchema}
         ]),
+        // client kafka
         ClientsModule.register([
             {
-                name: `${process.env.KAFKA_CLIENT_NAME}`, // Имя клиента Kafkaprocess.env.KAFKA_CLIENT_NAME
+                name: `${process.env.KAFKA_CLIENT_NAME}`,
                 transport: Transport.KAFKA,
                 options: {
                     client: {
-                        brokers: [process.env.KAFKA_URI], // Адрес брокера Kafka
+                        brokers: [process.env.KAFKA_URI],
                     },
                     consumer: {
                         groupId: `${process.env.KAFKA_GROUP_ID}`
@@ -28,6 +30,7 @@ import { User, UserSchema } from 'app/models/user.schema';
                 },
             },
         ]),
+        // smtp
         MailerModule.forRoot({
             transport: {
                 host: process.env.MAILER_HOST,
@@ -44,7 +47,7 @@ import { User, UserSchema } from 'app/models/user.schema';
 
         })
     ],
-    providers: [CustomLoggerService],
+    providers: [CustomLoggerService], // loger service 
     exports: [MongooseModule, ClientsModule, MailerModule, CustomLoggerService],
 })
-export class LazyModule { }
+export class GlobalModule { }
