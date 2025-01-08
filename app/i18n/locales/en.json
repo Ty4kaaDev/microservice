@@ -1,0 +1,8 @@
+{
+    "error": {
+        "userNotFound": "User not found",
+        "invalidCredentials": "Invalid credentials",
+        "unknownError": "An unknown error occurred",
+        "failedValidation": "Failed validation data"
+    }
+}

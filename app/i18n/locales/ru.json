@@ -1,0 +1,8 @@
+{
+    "error": {
+        "userNotFound": "Пользователь не найден",
+        "invalidCredentials": "Неверные учетные данные",
+        "unknownError": "Неизвестная ошибка",
+        "failedValidation": "Ошибка валидации данных"
+    }
+}
