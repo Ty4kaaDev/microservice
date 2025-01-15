@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  nestjs:
+    build: ./  # Путь к проекту NestJS
+    container_name: nestjs
+    ports:
+      - "3000:3000"  # Прокси порт 3000 на хостовой машине к 3000 в контейнере
+    volumes:
+      - .:/app # Монтируем исходный код для разработки
+    networks:
+      - app-network  # Связываем с сетью, если нужно общаться с другими сервисами
+
+networks:
+  app-network:
+    driver: bridge
