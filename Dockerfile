@@ -8,7 +8,6 @@ WORKDIR /app
 COPY package*.json ./
 # Устанавливаем зависимости
 RUN npm install
-RUN npm install -g @nestjs/cli --unsafe-perm=true --verbose
 
 # Копируем папку app (вместо src) в контейнер
 COPY . .
