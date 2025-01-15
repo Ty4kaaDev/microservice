@@ -20,4 +20,4 @@ RUN npm run build
 EXPOSE 3000
 
 # Запускаем приложение
-CMD ["npm", "run", "start:prod"] 
+CMD ["npx", "nestjs", "new", "project", "npm", "run", "start:prod"] 
