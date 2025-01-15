@@ -6,9 +6,9 @@ WORKDIR /app
 
 # Копируем package.json и package-lock.json в контейнер
 COPY package*.json ./
-
 # Устанавливаем зависимости
 RUN npm install
+RUN npm install -g @nestjs/cli
 
 # Копируем папку app (вместо src) в контейнер
 COPY . .
