@@ -9,7 +9,7 @@ COPY package*.json ./
 # Устанавливаем зависимости
 RUN npm install
 USER root
-RUN npm install -g @nestjs/cli
+RUN npm install -g @nestjs/cli --verbose
 
 # Копируем папку app (вместо src) в контейнер
 COPY . .
