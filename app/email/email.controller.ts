@@ -1,9 +1,7 @@
 import { Controller, Inject } from "@nestjs/common";
-import { ClientKafka, Ctx, KafkaContext, MessagePattern } from "@nestjs/microservices";
+import { ClientKafka, Ctx, KafkaContext, MessagePattern, Payload } from "@nestjs/microservices";
 import { EmailService } from "./email.service";
-import { ValidateData } from "app/global/validate/validate.decorator";
 import { MessageDTO, SendMailDTO } from "app/global/dto/mail.dto";
-import { Message } from "telegraf/typings/core/types/typegram";
 import { UserService } from "app/user/user.service";
 import { UserCodeCheckDTO, UserRegisteredDTO } from "app/global/dto/user.dto";
 
@@ -16,7 +14,7 @@ export class EmailController {
 
     @MessagePattern('queuing.email.send')
     async sendEmail(
-        @ValidateData({ type: SendMailDTO, topicForError: 'queuing.email.send.failed' }) data: SendMailDTO
+        @Payload() data: SendMailDTO
     ) {
         data.to_addresses.length > 0 ? data.to_addresses.forEach(async to => {
             await this.emailService.sendMail(to, { subject: data.heading, text: data.body })
@@ -33,7 +31,7 @@ export class EmailController {
 
     @MessagePattern('queuing.password.code.checked')
     async passwordReset(
-        @ValidateData({type: UserCodeCheckDTO, topicForError: 'queuing.email.send.failed'}) data: UserCodeCheckDTO,
+        @Payload() data: UserCodeCheckDTO,
         @Ctx() ctx: KafkaContext
     ){
         const template = await this.emailService.getTemplate('topic', ctx.getTopic())
@@ -48,7 +46,7 @@ export class EmailController {
 
     @MessagePattern("queuing.user.registered")
     async userRegistered(
-        @ValidateData({ type: UserRegisteredDTO, topicForError: "queuing.email.send.failed" }) data: UserRegisteredDTO,
+        @Payload() data: UserRegisteredDTO,
         @Ctx() ctx: KafkaContext
     ) {
         const template = await this.emailService.getTemplate('topic', ctx.getTopic())

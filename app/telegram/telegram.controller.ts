@@ -1,7 +1,6 @@
 import { Controller, Inject } from "@nestjs/common";
-import { ClientKafka, MessagePattern } from "@nestjs/microservices";
+import { ClientKafka, MessagePattern, Payload } from "@nestjs/microservices";
 import { TelegramService } from "./telergam.service";
-import { ValidateData } from "app/global/validate/validate.decorator";
 import { SendTelegramDTO } from "app/global/dto/tg.dto";
 
 @Controller()
@@ -13,7 +12,7 @@ export class TelegramController {
 
     @MessagePattern('queuing.tg.send')
     async sendTelegram(
-        @ValidateData({ type: SendTelegramDTO, topicForError: 'queuing.tg.send.failed' }) data: SendTelegramDTO
+        @Payload() data: SendTelegramDTO
     ) {
         data.chatId.length > 0 ? data.chatId.forEach(async chatId => {
             await this.telegramService.sendTelegram(chatId, data.message)
